@@ -12,20 +12,11 @@ npm i oxapay
 ```
 
 ## Usage
-The oxapay library now supports typescript and cjs. The usage of both is given below: 
+The oxapay library now supports typescript The usage of both is given below: 
 
 ### Typescript
 ```typescript
 import { Merchant, Payout, General } from 'oxapay';
-
-const merchant = new Merchant('YOUR_API_KEY')
-const payout = new Payout('YOUR_API_KEY')
-const general = new General('YOUR_API_KEY')
-```
-
-### CommonJS
-```javascript
-const { Merchant, Payout, General } = require('oxapay');
 
 const merchant = new Merchant('YOUR_API_KEY')
 const payout = new Payout('YOUR_API_KEY')
@@ -40,12 +31,8 @@ For detailed descriptions of the parameters and methods, refer to the official O
 
 This oxapay library is developed and maintained by ROBBING GAMER from Codinary. It is officially affiliated with Oxapay.
 
-## Contributions
+## Fork Changes
 
-Contributions to this library are welcome. If you would like to contribute, please hit us a dm in [telegram](https://t.me/ROBBING_GAMER)
-
-For more information and detailed API documentation, refer to the official Oxapay API documentation at [https://docs.oxapay.com](https://docs.oxapay.com).
-
+Due to the nature of crypto project scams, I forked this library so I can maintain a clean and trustworthy codebase under my own control. :-)
 ---
 
-This documentation provides comprehensive information on using the oxapay library to interact with the Oxapay Merchant API. If you have any questions or need further assistance, please refer to the official Oxapay documentation or reach out to [@ROBBING_GAMER](https://t.me/ROBBING_GAMER) On telegram Or Reach out to oxapay official support team.
