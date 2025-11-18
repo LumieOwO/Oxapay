@@ -1,7 +1,7 @@
 {
   "name": "oxapay",
   "version": "1.0.1",
-  "description": "An easy to use nodejs package to integrate your project with oxapay",
+  "description": "A clean and maintained Node.js wrapper for Oxapay API",
   "main": "main.js",
   "types": "main.ts",
   "scripts": {
@@ -9,26 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OfficialCodinary/Oxapay.git"
+    "url": "git+https://github.com/LumieOwO/Oxapay.git"
   },
   "keywords": [
-    "oxapay.com",
     "oxapay",
-    "oxa",
-    "pay",
     "crypto",
+    "payments",
     "merchant",
     "payouts",
-    "payments",
-    "ROBBING",
-    "GAMER"
+    "api"
   ],
-  "author": "ROBBING GAMER",
+  "author": "LumieOwO",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/OfficialCodinary/Oxapay/issues"
+    "url": "https://github.com/LumieOwO/Oxapay/issues"
   },
-  "homepage": "https://github.com/OfficialCodinary/Oxapay#readme",
+  "homepage": "https://github.com/LumieOwO/Oxapay#readme",
   "dependencies": {
     "axios": "^1.6.2",
     "path": "^0.12.7"
