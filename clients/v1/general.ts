@@ -1,4 +1,3 @@
-import axios from "axios";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
@@ -18,9 +17,6 @@ type ResponseType<T> = {
     version: string;
 };
 
-/**
- * A class representing a client for interacting with the Oxapay General API.
- */
 class ClientGeneral {
     private apiBaseURL = "https://api.oxapay.com/v1/general/";
     private methods: any;
@@ -44,29 +40,46 @@ class ClientGeneral {
             });
     }
 
-    private async request<T>(method: keyof typeof this.methods, reqData?: object): Promise<ResponseType<T>> {
+    private async request<T>(
+        method: keyof typeof this.methods,
+        reqData?: object
+    ): Promise<ResponseType<T>> {
         try {
             await this.initialization;
+
             const methodInfo = this.methods[method];
-            if (!methodInfo) throw new Error(`Method ${String(method)} not found in methodInfos.json`);
+            if (!methodInfo) {
+                throw new Error(`Method ${String(method)} not found in methodInfos.json`);
+            }
 
             const url = `${this.apiBaseURL}${methodInfo.path}`;
-            const response = await axios({
+
+            const res = await fetch(url, {
+                method: methodInfo.reqType.toUpperCase(),
                 headers: {
+                    "Content-Type": "application/json",
                     "general_api_key": this.apiKey,
                 },
-                method: methodInfo.reqType.toLowerCase(),
-                url,
-                data: reqData || {},
+                body: reqData && Object.keys(reqData).length
+                    ? JSON.stringify(reqData)
+                    : undefined,
             });
-            if (this.isDebug) console.log(response.data);
-            return response.data;
+
+            let data: any;
+            try {
+                data = await res.json();
+            } catch {
+                data = null;
+            }
+
+            if (this.isDebug) console.log(data);
+
+            return data;
         } catch (err) {
             if (err instanceof Error) {
                 throw new Error(`Request failed: ${err.message}`);
-            } else {
-                throw new Error("Request failed with an unknown error");
             }
+            throw new Error("Request failed with an unknown error");
         }
     }
 
@@ -94,8 +107,8 @@ class ClientGeneral {
         to_currency?: string;
         from_date?: number;
         to_date?: number;
-        sort_by?: 'create_date' | 'amount'
-        sort_type?: 'asc' | 'desc'
+        sort_by?: "create_date" | "amount";
+        sort_type?: "asc" | "desc";
         size?: number;
         page?: number;
     }): Promise<ResponseType<{
