@@ -1,4 +1,3 @@
-import axios from "axios";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
@@ -18,9 +17,6 @@ type ResponseType<T> = {
     version: string;
 };
 
-/**
- * A class representing a client for interacting with the Oxapay Common API.
- */
 class ClientCommon {
     private apiBaseURL = "https://api.oxapay.com/v1/common/";
     private methods: any;
@@ -36,27 +32,43 @@ class ClientCommon {
             });
     }
 
-    private async request<T>(method: keyof typeof this.methods, reqData?: object): Promise<ResponseType<T>> {
+    private async request<T>(
+        method: keyof typeof this.methods,
+        reqData?: object
+    ): Promise<ResponseType<T>> {
         try {
             await this.initialization;
+
             const methodInfo = this.methods[method];
-            if (!methodInfo) throw new Error(`Method ${String(method)} not found in methodInfos.json`);
+            if (!methodInfo) {
+                throw new Error(`Method ${String(method)} not found in methodInfos.json`);
+            }
 
             const url = `${this.apiBaseURL}${methodInfo.path}`;
-            const response = await axios({
-                method: methodInfo.reqType.toLowerCase(),
-                url,
-                data: reqData || {},
-                validateStatus: () => true, 
+
+            const res = await fetch(url, {
+                method: methodInfo.reqType.toUpperCase(),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: reqData && Object.keys(reqData).length
+                    ? JSON.stringify(reqData)
+                    : undefined,
             });
 
-            return response.data;
+            let data: any;
+            try {
+                data = await res.json();
+            } catch {
+                data = null;
+            }
+
+            return data;
         } catch (err) {
             if (err instanceof Error) {
                 throw new Error(`Request failed: ${err.message}`);
-            } else {
-                throw new Error("Request failed with an unknown error");
             }
+            throw new Error("Request failed with an unknown error");
         }
     }
 
@@ -73,13 +85,13 @@ class ClientCommon {
             status: boolean;
             networks: {
                 [networkName: string]: {
-                    network: string,
-                    name: string,
-                    required_confirmations: number,
-                    withdraw_fee: number,
-                    withdraw_min: number,
-                    deposit_min: number,
-                    static_fixed_fee: number,
+                    network: string;
+                    name: string;
+                    required_confirmations: number;
+                    withdraw_fee: number;
+                    withdraw_min: number;
+                    deposit_min: number;
+                    static_fixed_fee: number;
                 };
             };
         };
@@ -99,13 +111,13 @@ class ClientCommon {
     }
 
     async supportedNetworks(): Promise<ResponseType<{
-        list: string[]
+        list: string[];
     }>> {
         return this.request("supportedNetworks");
     }
 
     async systemStatus(): Promise<ResponseType<{
-        status: boolean
+        status: boolean;
     }>> {
         return this.request("systemStatus");
     }
