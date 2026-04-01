@@ -1,6 +1,5 @@
-import axios from "axios";
 import { readFile } from "fs/promises";
-import { join } from 'path';
+import { join } from "path";
 
 /**
  * A generic type for API responses.
@@ -28,43 +27,59 @@ class ClientPayout {
     constructor(apiKey: string, debugLogger = false) {
         this.apiKey = apiKey;
         this.isDebug = debugLogger;
-        if (!apiKey) throw new Error('API key is required');
-        if (typeof debugLogger !== 'boolean') throw new Error('Debug logger must be a boolean');
 
-        this.initialization = readFile(join(__dirname, 'methodInfos.json'), 'utf-8')
-            .then(data => {
+        if (!apiKey) throw new Error("API key is required");
+        if (typeof debugLogger !== "boolean") throw new Error("Debug logger must be a boolean");
+
+        this.initialization = readFile(join(__dirname, "methodInfos.json"), "utf-8")
+            .then((data) => {
                 this.methods = JSON.parse(data).Payout;
             })
-            .catch(err => {
+            .catch((err) => {
                 throw new Error(`Failed to load method information: ${err.message}`);
             });
     }
 
-    private async request<T>(method: keyof typeof this.methods, reqData?: object, explicitUrl?: string): Promise<ResponseType<T>> {
+    private async request<T>(
+        method: keyof typeof this.methods,
+        reqData?: object,
+        explicitUrl?: string
+    ): Promise<ResponseType<T>> {
         try {
             await this.initialization;
+
             const methodInfo = this.methods[method];
-            if (!methodInfo) throw new Error(`Method ${String(method)} not found in methodInfos.json`);
+            if (!methodInfo) {
+                throw new Error(`Method ${String(method)} not found in methodInfos.json`);
+            }
 
             const url = explicitUrl ?? `${this.apiBaseURL}${methodInfo.path}`;
-            const response = await axios({
-                method: methodInfo.reqType.toLowerCase(),
-                url,
+
+            const res = await fetch(url, {
+                method: methodInfo.reqType.toUpperCase(),
                 headers: {
+                    "Content-Type": "application/json",
                     "payout_api_key": this.apiKey,
                 },
-                data: reqData,
-                validateStatus: () => true, 
+                body: reqData ? JSON.stringify(reqData) : undefined,
             });
 
-            if (this.isDebug) console.log(response.data);
-            return response.data;
+            // Axios returns parsed JSON automatically → replicate
+            let data: any;
+            try {
+                data = await res.json();
+            } catch {
+                data = null;
+            }
+
+            if (this.isDebug) console.log(data);
+
+            return data;
         } catch (err) {
             if (err instanceof Error) {
                 throw new Error(`Request failed: ${err.message}`);
-            } else {
-                throw new Error("Request failed with an unknown error");
             }
+            throw new Error("Request failed with an unknown error");
         }
     }
 
@@ -80,7 +95,7 @@ class ClientPayout {
         track_id: string;
         status: string;
     }>> {
-        return this.request('generatePayout', reqData);
+        return this.request("generatePayout", reqData);
     }
 
     async payoutHistory(reqData: {
@@ -93,7 +108,7 @@ class ClientPayout {
         from_date?: number;
         to_date?: number;
         sort_by?: string;
-        sort_type?: 'asc' | 'desc';
+        sort_type?: "asc" | "desc";
         size?: number;
         page?: number;
     }): Promise<ResponseType<{
@@ -117,7 +132,7 @@ class ClientPayout {
             total: number;
         };
     }>> {
-        return this.request('payoutHistory', reqData);
+        return this.request("payoutHistory", reqData);
     }
 
     async payoutInfo(reqData: {
@@ -137,9 +152,11 @@ class ClientPayout {
         date: number;
     }>> {
         await this.initialization;
-        const methodInfo = this.methods['payoutInfo'];
+
+        const methodInfo = this.methods["payoutInfo"];
         const url = `${this.apiBaseURL}${methodInfo.path}/${reqData.trackId}`;
-        return this.request('payoutInfo', reqData, url);
+
+        return this.request("payoutInfo", reqData, url);
     }
 }
 
