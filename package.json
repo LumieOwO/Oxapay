@@ -1,15 +1,14 @@
-{
-  "name": "oxapay",
-  "version": "1.0.2",
-  "description": "A clean and maintained Node.js wrapper for Oxapay API",
-  "main": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build",
-    "test": "echo \"No tests yet\""
-  },
+ {
+    "name": "oxapay",
+    "version": "1.0.2",
+    "description": "A clean and maintained Node.js wrapper for Oxapay API",
+    "main": "main.ts",
+    "scripts": {
+      "build": "tsc",
+      "clean": "rm -rf dist",
+      "prepublishOnly": "npm run clean && npm run build",
+      "test": "echo \"No tests yet\""
+    },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LumieOwO/Oxapay.git"
